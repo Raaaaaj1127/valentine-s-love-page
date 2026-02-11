@@ -1,65 +1,86 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const PhotoGallery = () => {
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<string[]>(Array(5).fill(""));
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [editingSlot, setEditingSlot] = useState<number | null>(null);
 
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      const newPhotos = Array.from(files).map((f) => URL.createObjectURL(f));
-      setPhotos((prev) => [...prev, ...newPhotos]);
+  const handleUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && editingSlot !== null) {
+      const url = URL.createObjectURL(file);
+      setPhotos((prev) => prev.map((p, i) => (i === editingSlot ? url : p)));
+      setEditingSlot(null);
     }
+  }, [editingSlot]);
+
+  const openFilePicker = (slot: number) => {
+    setEditingSlot(slot);
+    setTimeout(() => fileInputRef.current?.click(), 50);
   };
 
-  const removePhoto = (idx: number) => {
-    setPhotos((prev) => prev.filter((_, i) => i !== idx));
-  };
+  // Decorative layout configs for each slot
+  const layouts = [
+    { className: "col-span-2 row-span-2", rotate: -2, label: "🌹" },
+    { className: "col-span-1 row-span-1", rotate: 3, label: "🌷" },
+    { className: "col-span-1 row-span-1", rotate: -1, label: "🌻" },
+    { className: "col-span-1 row-span-1", rotate: 2, label: "🌸" },
+    { className: "col-span-1 row-span-1", rotate: -3, label: "💐" },
+  ];
 
   return (
     <div className="text-center">
       <h3 className="text-4xl font-romantic text-foreground mb-2">Our Memories 📸</h3>
-      <p className="text-muted-foreground font-body mb-6">
-        Add your favorite photos together 💕
+      <p className="text-muted-foreground font-body mb-8">
+        Click each frame to add your favorite photos together 💕
       </p>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
-        {photos.map((photo, idx) => (
+      <div className="grid grid-cols-3 grid-rows-2 gap-4 max-w-3xl mx-auto auto-rows-[200px] md:auto-rows-[260px]">
+        {layouts.map((layout, idx) => (
           <motion.div
             key={idx}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="relative group aspect-square rounded-2xl overflow-hidden shadow-soft border border-border cursor-pointer"
-            onClick={() => setSelectedPhoto(photo)}
+            initial={{ opacity: 0, y: 30, rotate: layout.rotate }}
+            whileInView={{ opacity: 1, y: 0, rotate: layout.rotate }}
+            viewport={{ once: true }}
+            transition={{ delay: idx * 0.1 }}
+            whileHover={{ rotate: 0, scale: 1.04, zIndex: 10 }}
+            className={`${layout.className} relative group rounded-2xl overflow-hidden shadow-romantic border-4 border-card bg-card cursor-pointer transition-shadow hover:shadow-glow`}
+            onClick={() => photos[idx] ? setSelectedPhoto(photos[idx]) : openFilePicker(idx)}
+            style={{ transform: `rotate(${layout.rotate}deg)` }}
           >
-            <img src={photo} alt={`Memory ${idx + 1}`} className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors" />
-            <button
-              onClick={(e) => { e.stopPropagation(); removePhoto(idx); }}
-              className="absolute top-2 right-2 w-7 h-7 bg-card/80 backdrop-blur-sm rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-foreground"
-            >
-              ✕
-            </button>
+            {photos[idx] ? (
+              <>
+                <img src={photos[idx]} alt={`Memory ${idx + 1}`} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors" />
+                <button
+                  onClick={(e) => { e.stopPropagation(); openFilePicker(idx); }}
+                  className="absolute bottom-2 right-2 bg-card/80 backdrop-blur-sm text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity font-romantic text-foreground"
+                >
+                  Change 📷
+                </button>
+              </>
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center bg-secondary/50 hover:bg-secondary transition-colors">
+                <span className="text-4xl mb-2">{layout.label}</span>
+                <span className="font-romantic text-lg text-muted-foreground">Add Photo</span>
+                <span className="text-xs text-muted-foreground/70 mt-1">Click here</span>
+              </div>
+            )}
+
+            {/* Decorative corner flower */}
+            <span className="absolute top-1 left-2 text-lg opacity-60 pointer-events-none">
+              {layout.label}
+            </span>
           </motion.div>
         ))}
-
-        <motion.div
-          whileHover={{ scale: 1.03 }}
-          onClick={() => fileInputRef.current?.click()}
-          className="aspect-square bg-card border-2 border-dashed border-border rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
-        >
-          <span className="text-3xl mb-2">📷</span>
-          <span className="text-sm font-romantic text-muted-foreground">Add Photos</span>
-        </motion.div>
       </div>
 
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        multiple
         onChange={handleUpload}
         className="hidden"
       />
@@ -74,12 +95,12 @@ const PhotoGallery = () => {
             onClick={() => setSelectedPhoto(null)}
           >
             <motion.img
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
+              initial={{ scale: 0.8, rotate: -5 }}
+              animate={{ scale: 1, rotate: 0 }}
               exit={{ scale: 0.8 }}
               src={selectedPhoto}
               alt="Full size"
-              className="max-w-full max-h-[85vh] rounded-2xl shadow-romantic object-contain"
+              className="max-w-full max-h-[85vh] rounded-2xl shadow-romantic object-contain border-4 border-card"
             />
           </motion.div>
         )}
