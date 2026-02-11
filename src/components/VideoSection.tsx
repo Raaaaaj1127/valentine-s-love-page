@@ -1,10 +1,12 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
+import { useBgMusic } from "@/components/BackgroundMusic";
 
 const VideoSection = () => {
   const [videoUrl, setVideoUrl] = useState("");
   const [videoFile, setVideoFile] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { pause, resume } = useBgMusic();
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -63,6 +65,9 @@ const VideoSection = () => {
               <video
                 src={videoFile}
                 controls
+                onPlay={pause}
+                onPause={resume}
+                onEnded={resume}
                 className="w-full aspect-video object-cover"
               />
             ) : (
@@ -74,9 +79,12 @@ const VideoSection = () => {
               />
             )}
           </div>
+          <p className="text-xs text-muted-foreground mt-2 font-body italic">
+            🎵 Background music pauses automatically when video plays
+          </p>
           <button
             onClick={() => { setVideoFile(null); setVideoUrl(""); }}
-            className="mt-4 text-sm text-muted-foreground hover:text-foreground font-body transition-colors"
+            className="mt-3 text-sm text-muted-foreground hover:text-foreground font-body transition-colors"
           >
             Change video
           </button>
