@@ -32,9 +32,9 @@ const PhotoGallery = () => {
 
   return (
     <div className="text-center">
-      <h3 className="text-4xl font-romantic text-foreground mb-2">Our Memories 📸</h3>
+      <h3 className="text-4xl font-romantic text-foreground mb-2">You, My Beautiful 💐</h3>
       <p className="text-muted-foreground font-body mb-8">
-        Click each frame to add your favorite photos together 💕
+        Every picture of you takes my breath away 💕
       </p>
 
       <div className="grid grid-cols-3 grid-rows-2 gap-4 max-w-3xl mx-auto auto-rows-[200px] md:auto-rows-[260px]">
