@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import FloatingHearts from "@/components/FloatingHearts";
 import PetalRain from "@/components/PetalRain";
+import FloralBackground from "@/components/FloralBackground";
 import LoveLetters from "@/components/LoveLetters";
 import TicTacToe from "@/components/TicTacToe";
 import VideoSection from "@/components/VideoSection";
@@ -18,6 +19,7 @@ const ValentinePage = () => {
       <div className="min-h-screen bg-gradient-blush relative overflow-hidden">
         <FloatingHearts />
         <PetalRain />
+        <FloralBackground />
 
         {/* Hero */}
         <section className="relative z-10 flex flex-col items-center justify-center min-h-[60vh] text-center px-6 pt-16">
