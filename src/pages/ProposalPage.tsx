@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import FloatingHearts from "@/components/FloatingHearts";
 import PetalRain from "@/components/PetalRain";
+import FloralBackground from "@/components/FloralBackground";
 
 const noMessages = [
   "Are you sure? 🥺 Look into my eyes...",
@@ -35,6 +36,7 @@ const ProposalPage = () => {
     <div className="min-h-screen bg-gradient-blush flex items-center justify-center relative overflow-hidden">
       <FloatingHearts />
       <PetalRain />
+      <FloralBackground />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
