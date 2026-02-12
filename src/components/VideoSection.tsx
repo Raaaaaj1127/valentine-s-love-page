@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBgMusic } from "@/components/BackgroundMusic";
+import giftboxImg from "@/assets/giftbox.png";
 
 const VideoSection = () => {
   const [videoUrl, setVideoUrl] = useState("");
@@ -66,41 +67,32 @@ const VideoSection = () => {
           animate={{ y: [0, -8, 0] }}
           transition={{ y: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
         >
-          {/* Gift box */}
-          <div className="relative w-52 h-52 mx-auto">
-            {/* Box body */}
-            <div className="absolute bottom-0 w-full h-36 bg-gradient-to-b from-primary/80 to-primary rounded-xl shadow-romantic border-2 border-primary/30" />
-            {/* Box lid */}
-            <motion.div
-              className="absolute top-4 w-full h-14 bg-gradient-to-b from-primary to-primary/90 rounded-xl shadow-lg border-2 border-primary/30 z-10"
-              animate={{ rotate: [0, -1, 1, 0] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              {/* Ribbon horizontal */}
-              <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-6 bg-accent/80 rounded" />
-            </motion.div>
-            {/* Ribbon vertical on box */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-36 bg-accent/80 rounded z-[5]" />
-            {/* Bow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 text-5xl z-20">🎀</div>
+          {/* Gift box image */}
+          <div className="relative w-56 h-56 mx-auto">
+            <img src={giftboxImg} alt="Gift box" className="w-full h-full object-contain drop-shadow-lg" />
             {/* Sparkles */}
             <motion.span
-              className="absolute -top-3 -right-3 text-2xl"
-              animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
+              className="absolute -top-4 -right-4 text-2xl"
+              animate={{ opacity: [0, 1, 0], scale: [0.5, 1.3, 0.5], rotate: [0, 20, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
             >✨</motion.span>
             <motion.span
-              className="absolute -top-2 -left-4 text-xl"
-              animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
+              className="absolute top-0 -left-5 text-xl"
+              animate={{ opacity: [0, 1, 0], scale: [0.5, 1.3, 0.5], rotate: [0, -15, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
             >💖</motion.span>
             <motion.span
-              className="absolute -bottom-2 -right-4 text-xl"
-              animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
+              className="absolute -bottom-3 -right-5 text-xl"
+              animate={{ opacity: [0, 1, 0], scale: [0.5, 1.3, 0.5] }}
               transition={{ duration: 1.5, repeat: Infinity, delay: 1 }}
             >✨</motion.span>
+            <motion.span
+              className="absolute bottom-4 -left-3 text-lg"
+              animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
+              transition={{ duration: 1.8, repeat: Infinity, delay: 0.8 }}
+            >💕</motion.span>
           </div>
-          <p className="font-romantic text-xl text-primary mt-4 animate-pulse">Tap to open! 💝</p>
+          <p className="font-romantic text-2xl text-primary mt-4 animate-pulse">Tap to open! 💝</p>
         </motion.div>
       )}
 
