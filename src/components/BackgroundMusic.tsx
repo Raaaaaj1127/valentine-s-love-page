@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback, createContext, useContext } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import bgMusic from "@/assets/Until_I_Found_You.mp3";
 
 interface BgMusicContextType {
   pause: () => void;
@@ -17,15 +18,12 @@ const BackgroundMusic = ({ children }: { children: React.ReactNode }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [musicFile, setMusicFile] = useState<string | null>(null);
-  const [showUpload, setShowUpload] = useState(true);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const play = useCallback(() => {
-    if (audioRef.current && musicFile) {
+    if (audioRef.current) {
       audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
     }
-  }, [musicFile]);
+  }, []);
 
   const pause = useCallback(() => {
     if (audioRef.current) {
@@ -35,10 +33,10 @@ const BackgroundMusic = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const resume = useCallback(() => {
-    if (audioRef.current && musicFile && hasInteracted) {
+    if (audioRef.current && hasInteracted) {
       audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
     }
-  }, [musicFile, hasInteracted]);
+  }, [hasInteracted]);
 
   const toggle = () => {
     if (isPlaying) pause();
@@ -46,24 +44,13 @@ const BackgroundMusic = ({ children }: { children: React.ReactNode }) => {
     setHasInteracted(true);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setMusicFile(url);
-      setShowUpload(false);
-    }
-  };
-
   useEffect(() => {
-    if (musicFile && audioRef.current) {
-      audioRef.current.src = musicFile;
+    if (audioRef.current) {
+      audioRef.current.src = bgMusic;
       audioRef.current.loop = true;
       audioRef.current.volume = 0.3;
-      play();
-      setHasInteracted(true);
     }
-  }, [musicFile, play]);
+  }, []);
 
   return (
     <BgMusicContext.Provider value={{ pause, resume }}>
@@ -71,36 +58,23 @@ const BackgroundMusic = ({ children }: { children: React.ReactNode }) => {
 
       {/* Floating music control */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
-        {showUpload && !musicFile && (
+        {!hasInteracted && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-card/90 backdrop-blur-md border border-border rounded-2xl shadow-romantic p-4 max-w-[240px]"
           >
-            <p className="text-sm font-romantic text-foreground mb-2">🎵 Add romantic music</p>
+            <p className="text-sm font-romantic text-foreground mb-2">🎵 Tap to play music</p>
             <button
-              onClick={() => fileInputRef.current?.click()}
+              onClick={toggle}
               className="w-full bg-gradient-romantic text-primary-foreground font-romantic text-sm px-4 py-2 rounded-full"
             >
-              Upload Music 🎶
+              Play Music 🎶
             </button>
-            <button
-              onClick={() => setShowUpload(false)}
-              className="text-xs text-muted-foreground mt-2 block mx-auto"
-            >
-              skip
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="audio/*"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
           </motion.div>
         )}
 
-        {musicFile && (
+        {hasInteracted && (
           <motion.button
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -110,18 +84,6 @@ const BackgroundMusic = ({ children }: { children: React.ReactNode }) => {
             className="w-14 h-14 rounded-full bg-gradient-romantic text-primary-foreground shadow-glow flex items-center justify-center text-2xl"
           >
             {isPlaying ? "🔊" : "🔇"}
-          </motion.button>
-        )}
-
-        {!musicFile && !showUpload && (
-          <motion.button
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            whileHover={{ scale: 1.1 }}
-            onClick={() => setShowUpload(true)}
-            className="w-12 h-12 rounded-full bg-card border border-border shadow-soft flex items-center justify-center text-xl"
-          >
-            🎵
           </motion.button>
         )}
       </div>

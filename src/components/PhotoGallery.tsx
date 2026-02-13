@@ -1,33 +1,20 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import pic1 from "@/assets/pic1.jpeg";
+import pic2 from "@/assets/pic2.jpeg";
+import pic3 from "@/assets/pic3.jpeg";
+import pic4 from "@/assets/pic4.jpeg";
 
 const PhotoGallery = () => {
-  const [photos, setPhotos] = useState<string[]>(Array(5).fill(""));
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [editingSlot, setEditingSlot] = useState<number | null>(null);
 
-  const handleUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && editingSlot !== null) {
-      const url = URL.createObjectURL(file);
-      setPhotos((prev) => prev.map((p, i) => (i === editingSlot ? url : p)));
-      setEditingSlot(null);
-    }
-  }, [editingSlot]);
+  const photos = [pic1, pic2, pic3, pic4];
 
-  const openFilePicker = (slot: number) => {
-    setEditingSlot(slot);
-    setTimeout(() => fileInputRef.current?.click(), 50);
-  };
-
-  // Decorative layout configs for each slot
   const layouts = [
     { className: "col-span-2 row-span-2", rotate: -2, label: "🌹" },
     { className: "col-span-1 row-span-1", rotate: 3, label: "🌷" },
     { className: "col-span-1 row-span-1", rotate: -1, label: "🌻" },
     { className: "col-span-1 row-span-1", rotate: 2, label: "🌸" },
-    { className: "col-span-1 row-span-1", rotate: -3, label: "💐" },
   ];
 
   return (
@@ -47,43 +34,17 @@ const PhotoGallery = () => {
             transition={{ delay: idx * 0.1 }}
             whileHover={{ rotate: 0, scale: 1.04, zIndex: 10 }}
             className={`${layout.className} relative group rounded-2xl overflow-hidden shadow-romantic border-4 border-card bg-card cursor-pointer transition-shadow hover:shadow-glow`}
-            onClick={() => photos[idx] ? setSelectedPhoto(photos[idx]) : openFilePicker(idx)}
+            onClick={() => setSelectedPhoto(photos[idx])}
             style={{ transform: `rotate(${layout.rotate}deg)` }}
           >
-            {photos[idx] ? (
-              <>
-                <img src={photos[idx]} alt={`Memory ${idx + 1}`} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors" />
-                <button
-                  onClick={(e) => { e.stopPropagation(); openFilePicker(idx); }}
-                  className="absolute bottom-2 right-2 bg-card/80 backdrop-blur-sm text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity font-romantic text-foreground"
-                >
-                  Change 📷
-                </button>
-              </>
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-secondary/50 hover:bg-secondary transition-colors">
-                <span className="text-4xl mb-2">{layout.label}</span>
-                <span className="font-romantic text-lg text-muted-foreground">Add Photo</span>
-                <span className="text-xs text-muted-foreground/70 mt-1">Click here</span>
-              </div>
-            )}
-
-            {/* Decorative corner flower */}
+            <img src={photos[idx]} alt={`Memory ${idx + 1}`} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors" />
             <span className="absolute top-1 left-2 text-lg opacity-60 pointer-events-none">
               {layout.label}
             </span>
           </motion.div>
         ))}
       </div>
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleUpload}
-        className="hidden"
-      />
 
       <AnimatePresence>
         {selectedPhoto && (
