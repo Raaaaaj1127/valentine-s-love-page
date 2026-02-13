@@ -35,7 +35,7 @@ const LoveLetters = () => {
         Love Letters
       </h3>
       <p className="text-muted-foreground font-body text-center mb-8">
-        Click on any letter to edit it with your own words 💌
+        💌
       </p>
 
       <div className="grid gap-6 md:grid-cols-3">
@@ -77,7 +77,7 @@ const LoveLetters = () => {
                 <p className="font-body text-sm text-muted-foreground leading-relaxed italic">
                   "{letter.content}"
                 </p>
-                <p className="text-xs text-muted-foreground mt-3">✏️ Click to edit</p>
+                
               </>
             )}
           </motion.div>
